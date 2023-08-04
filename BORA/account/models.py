@@ -25,7 +25,8 @@ class User(AbstractUser):
     user_id=models.AutoField(primary_key=True)
     # username (아이디), password (패스워드) AbstractUser에 존재
     nickname=models.CharField(max_length=20)
-    profile=models.ImageField(upload_to = "user_profile", null=True, blank=True)
+    # profile=models.ImageField(upload_to = "user_profile", null=True, blank=True)
+    profile=models.TextField( null=True, blank=True)
     gender = models.CharField(choices=GENDERS, max_length=1,  default='여')
     is_publisher=models.BooleanField(default=False)
     age=models.IntegerField(choices=AGES,null=True)
