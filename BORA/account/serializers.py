@@ -9,6 +9,11 @@ from collections import OrderedDict
 #         model = Hashtag
 #         fields = ["hashtag"]
 
+class UserProfileSerializer(serializers.ModelSerializer): 
+     class Meta:
+        model=User
+        fields=['user_id','nickname','profile']
+
 
 class SignUpSerializer(serializers.ModelSerializer):            # 유저 시리얼라이저
     class Meta:
