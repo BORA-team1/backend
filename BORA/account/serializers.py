@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import *
 from collections import OrderedDict
-# from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.tokens import RefreshToken
 
 
 # class InterestSerializer(serializers.ModelSerializer):
@@ -12,13 +12,13 @@ from collections import OrderedDict
 class UserProfileSerializer(serializers.ModelSerializer): 
      class Meta:
         model=User
-        fields=['user_id','nickname','profile']
+        fields=['id','nickname','profile']
 
 
 class SignUpSerializer(serializers.ModelSerializer):            # 유저 시리얼라이저
     class Meta:
         model=User
-        fields=['user_id','username','password','nickname','profile','gender','age']
+        fields=['id','username','password','nickname','profile','gender','age']
     def create(self, validated_data):                # 회원정보가 save될 때 원래 create가 쓰일것임 그때 set_password라는 기능을 추가한 느낌
         user = User.objects.create(
             username=validated_data['username'],
@@ -45,14 +45,14 @@ class UserLoginSerializer(serializers.Serializer):
             if not user.check_password(password):
                 raise serializers.ValidationError('잘못된 비밀번호입니다.')
             else:
-                # token = RefreshToken.for_user(user)
-                # refresh = str(token)
-                # access = str(token.access_token)
+                token = RefreshToken.for_user(user)
+                refresh = str(token)
+                access = str(token.access_token)
 
                 data = {
-                    'user_id': user.user_id,
-                    'nickname': user.nickname
-                    # 'access_token': access
+                    'id': user.id,
+                    'nickname': user.nickname ,
+                    'access_token': access
                 }
                 return data
         else:

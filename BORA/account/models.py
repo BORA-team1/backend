@@ -22,7 +22,7 @@ class User(AbstractUser):
         (4, '40대'),
         (5, '50대 이상')
     )
-    user_id=models.AutoField(primary_key=True)
+    # id=models.AutoField(primary_key=True)
     # username (아이디), password (패스워드) AbstractUser에 존재
     nickname=models.CharField(max_length=20)
     # profile=models.ImageField(upload_to = "user_profile", null=True, blank=True)
@@ -34,4 +34,4 @@ class User(AbstractUser):
     interest=models.ManyToManyField(Hashtag)
     
     def __str__(self):
-        return "{}: {}".format(self.user_id,self.nickname)
+        return "{}: {}".format(self.id,self.nickname)
