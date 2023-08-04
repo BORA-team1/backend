@@ -34,3 +34,11 @@ class LogoutView(views.APIView):
         logout(request)
         return Response({'message':'로그아웃 성공'})
        
+
+class MyProfileView(views.APIView):
+    def get(self,request,format=None):
+        if request.user.is_authenticated:
+            serializer = UserProfileSerializer(request.user)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response({'message': '로그인이 필요합니다'}, status=status.HTTP_401_UNAUTHORIZED)
