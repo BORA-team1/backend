@@ -5,6 +5,7 @@ from rest_framework import views
 from rest_framework.response import Response
 from django.contrib.auth import logout
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 
 # Create your views here.
 class SignUpView(views.APIView):
@@ -28,17 +29,10 @@ class LoginView(views.APIView):
             return Response({'message': "로그인 성공", 'data': serializer.validated_data}, status=status.HTTP_200_OK)
         return Response({'message': "로그인 실패", 'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
-class LogoutView(views.APIView):
-    def delete(self,request):
-        user = request.user
-        logout(request)
-        return Response({'message':'로그아웃 성공'})
        
 
 class MyProfileView(views.APIView):
-    def get(self,request,format=None):
-        if request.user.is_authenticated:
-            serializer = UserProfileSerializer(request.user)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        else:
-            return Response({'message': '로그인이 필요합니다'}, status=status.HTTP_401_UNAUTHORIZED)
+    permission_classes = [IsAuthenticated]
+    def get(self, request, format=None):
+        serializer = UserProfileSerializer(request.user)
+        return Response({'message': '프로필 가져오기 성공', 'data': serializer.data}, status=status.HTTP_200_OK)
