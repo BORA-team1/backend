@@ -21,15 +21,20 @@ class SignUpView(views.APIView):
             return Response({'message':'회원가입 성공','data':serializer.data}, status=status.HTTP_201_CREATED)
         return Response({'message':'회원가입 실패','error':serializer.errors},status=status.HTTP_400_BAD_REQUEST)
     
-
 class LoginView(views.APIView):
-    def post(self,request):
-        serializer=UserLoginSerializer(data=request.data)       # 입력받은 댓글 데이터를 시리얼라이저에 넣어 변환
-        if serializer.is_valid():                               # 로그인이라 save는 안해도됨
-            return Response({'message':'로그인 성공','data':serializer.data})
-        return Response({'message':'로그인 실패','error':serializer.errors})
-    
+    def post(self, request):
+        serializer = UserLoginSerializer(data=request.data)
+        if serializer.is_valid():
+            return Response({'message': "로그인 성공", 'data': serializer.validated_data}, status=status.HTTP_200_OK)
+        return Response({'message': "로그인 실패", 'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
+# class LoginView(views.APIView):
+#     def post(self,request):
+#         serializer=UserLoginSerializer(data=request.data)     # 입력받은 댓글 데이터를 시리얼라이저에 넣어 변환
+#         if serializer.is_valid(): # 로그인이라 save는 안해도됨
+#             return Response({'message':'로그인 성공','data':serializer.data})
+#         return Response({'message':'로그인 실패','error':serializer.errors})
+    
 class LogoutView(views.APIView):
     def delete(self,request):
         user = request.user
