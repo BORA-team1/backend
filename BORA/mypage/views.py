@@ -54,3 +54,11 @@ class MypliListView(views.APIView):
         myPli = Playlist.objects.filter(mypli_user=now_user.id)
         myPlaylist=MyPliSerializer(myPli,many=True)
         return Response({'message': '재생목록 목록 조회 성공', 'data': {'myPlaylist':myPlaylist.data}}, status=status.HTTP_200_OK)
+    
+class FollowingView(views.APIView):
+    permission_classes = [IsAuthenticated] 
+    def post(self, request, user_pk):
+        user = request.user
+        follow = get_object_or_404(User, id=user_pk)
+        user.follow.add(follow)
+        return Response({'message': '팔로우 성공'}, status=status.HTTP_200_OK)
