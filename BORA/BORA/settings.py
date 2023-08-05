@@ -49,7 +49,8 @@ INSTALLED_APPS = [
     "line",
     "vote",
     "debate",
-    "audio"
+    "audio",
+    "mypage"
 ]
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (

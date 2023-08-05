@@ -15,7 +15,8 @@ class Post(models.Model):
     post_id=models.AutoField(primary_key=True)
     title=models.CharField(max_length=200)
     date=models.DateTimeField('date published') 
-    post_image=models.ImageField(upload_to = "post_image", null=True, blank=True)
+    # post_image=models.ImageField(upload_to = "post_image", null=True, blank=True)
+    post_image=models.TextField(max_length=2000)
     diff=models.IntegerField(choices=DIFFS)
     hashtag=models.ManyToManyField(Hashtag)
     post_user=models.ForeignKey(User, related_name='post_user',on_delete=models.SET_NULL,null=True)
@@ -24,6 +25,6 @@ class Post(models.Model):
 class PostSec(models.Model):
     sec_id=models.AutoField(primary_key=True)
     num=models.IntegerField()
-    title=models.CharField(max_length=200)
+    title=models.CharField(max_length=200,null=True,blank=True)
     content=models.TextField()
     sec_post=models.ForeignKey(Post, related_name='sec_post',on_delete=models.CASCADE)

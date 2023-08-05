@@ -4,10 +4,10 @@ from collections import OrderedDict
 from rest_framework_simplejwt.tokens import RefreshToken
 
 
-# class InterestSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Hashtag
-#         fields = ["hashtag"]
+class InterestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Hashtag
+        fields = ["hashtag"]
 
 class UserProfileSerializer(serializers.ModelSerializer): 
      class Meta:
