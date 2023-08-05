@@ -46,3 +46,8 @@ class PlaylistSerializer(serializers.ModelSerializer):
     class Meta:
         model=Playlist
         fields=['playlist_id','title','playlist_audio']
+
+class NewPlaylistSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Playlist
+        fields=['playlist_id','title','des','is_base','first_audio']
