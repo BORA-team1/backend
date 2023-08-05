@@ -34,96 +34,38 @@ class PlaylistView(views.APIView):
 class NewPlaylistView(views.APIView):
     permission_classes = [IsAuthenticated]
     def post(self, request):
+        # request에서 playlist_audio 삭제한 Request생성: 삭제 안하고 넘기면 Dict이 넘어왔다고 오류뜸
         Request=request.data.copy()
         Request.pop('playlist_audio')    
+
+        # 오디오들: playlist_audio데이터 뽑아냄
         playlist_audios=request.data['playlist_audio']
 
+        # 첫번째 오디오: playlist_audio데이터의 첫번째 요소를 first_audio로 지정
         first_audio_id = playlist_audios[0]['audio_id']
         first_audio=get_object_or_404(Audio,audio_id=first_audio_id)
-        # for audios in playlist_audios:
-        #     audio=audios['audio_id']
-        #     audioA, _ = Audio.objects.get_or_create(hashtag=audio)
-        #     serializer.playlist_audio.add(audioA)
+       
+        # Request에 담긴 데이터로 NewPlaylistSerializer생성
         serializer = NewPlaylistSerializer(data=Request)
         
-        # for audios in playlist_audio:
-        #     serializer.playlist_audio.add(playlist_audio)
-        # now_user=request.user
+        # 해시태그: 베이스 플레이리스트에서 hashtag뽑아와서 list로 저장
         base_pli=get_object_or_404(Playlist, playlist_id=request.data['playlist_id'])
         base_hashtag=list(base_pli.hashtag.all())
-
-       
-        serializer.first_audio= get_object_or_404(Audio, audio_id=request.data['playlist_audio'][0]['audio_id'])
-        serializer.hashtag=base_hashtag
-        # serializer.mypli_user=now_user
         
         if serializer.is_valid():
-            # serializer.mypli_user = request.user
+            # 작성자정보(mypli_user)와 첫번째오디오정보(first_audio)를 담아 시리얼라이저 save
+            newpli=serializer.save(mypli_user = request.user,first_audio=first_audio)   
 
-            newpli=serializer.save(mypli_user = request.user,first_audio=first_audio)
-
-            # serializer.validated_data['mypli_user'] = request.user
-            # serializer.validated_data['']
+            # playlist_audios 필드에 오디오들 추가
             for audios in playlist_audios:
                 audio=audios['audio_id']
                 audioA, _ = Audio.objects.get_or_create(audio_id=audio)
                 newpli.playlist_audio.add(audioA)
             
-
+            # hashtag 필드에 해시태그 추가
             for ht in base_hashtag:
                 newpli.hashtag.add(ht)
-            
-
-
-            # hashtags = request.data.get('interest', [])     # interest 받아옴
-            # for hashtag_name in hashtags:                   # 리스트 쪼갬
-            #     tag=hashtag_name['hashtag']                 # hashtag 키의 값
-            #     hashtag, _ = Hashtag.objects.get_or_create(hashtag=tag)  # 해당 이름을 가진 Hashtag 인스턴스를 데이터베이스에서 찾거나 없으면 생성
-            #     user.interest.add(hashtag)                 
+                          
 
             return Response({'message': '나만의 플리 성공', 'data': serializer.data}, status=status.HTTP_200_OK)
         return Response(serializer.errors)
-
-
-
-
-
-# class Playlist(models.Model):
-#     playlist_id=models.AutoField(primary_key=True)
-#     # title=models.CharField(max_length=200)
-#     # des=models.CharField(max_length=400,null=True,blank=True)
-#     is_base=models.BooleanField(default=False)
-#     first_audio=models.ForeignKey(Audio,related_name='first_audio',on_delete=models.SET_NULL,null=True)
-#     playlist_audio=models.ManyToManyField(Audio,related_name='playlist_audio')
-#     hashtag=models.ManyToManyField(Hashtag)
-#     mypli_user=models.ForeignKey(User, related_name='mypli_user',on_delete=models.CASCADE)
-
-
-# def post(self, request):
-#         serializer = self.NoticeSerializer(data=request.data)
-#         if serializer.is_valid(raise_exception=True):
-#             serializer.save(user=request.user)
-#             return Response({'message': 'TF 공지 작성 성공', 'data': serializer.data}, status=HTTP_200_OK)
-#         else:
-#             return Response({'message': 'TF 공지 작성 실패', 'data': serializer.errors}, status=HTTP_400_BAD_REQUEST)
-        
-#  def post(self, request, pk):
-#         booth = get_object_or_404(Booth, pk=pk)
-#         serializer = self.CommentSerializer(data=request.data)
-        
-#         if serializer.is_valid(raise_exception=True):
-#             serializer.save(user=request.user, booth=booth)
-#             return Response({'message': '댓글 작성 성공', 'data': serializer.data}, status=HTTP_200_OK)
-#         else:
-#             return Response({'message': '댓글 작성 실패', 'data': serializer.errors}, status=HTTP_400_BAD_REQUEST)
-    
-# {
-# 	"title": "[제목]",
-# 	"des": "[추가 설명]",
-# 	"playlist_id": 2,                  # 기존 플레이리스트 id
-# 	"playlist_audio": [
-# 			{ "audio_id": 1 },
-# 			{ "audio_id": 12 },
-# 			{ "audio_id": 130 }
-# 	]
-# }
