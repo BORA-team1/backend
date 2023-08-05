@@ -3,6 +3,7 @@ from rest_framework import views
 from rest_framework import status
 from rest_framework.response import Response
 from .serializers import *
+from audio.models import Playlist
 
 # Create your views here.
 
@@ -21,3 +22,10 @@ class AudioDetailView(views.APIView):
             "AudioSec":audiosecseri
         }
         return Response({'message': '오디오북 상세 조회 성공', 'data': data}, status=status.HTTP_200_OK)
+    
+
+class PlaylistView(views.APIView):
+     def get(self, request, playlist_pk):
+        playlist = get_object_or_404(Playlist, playlist_id=playlist_pk)
+        serializer=PlaylistSerializer(playlist)
+        return Response({'message': '플레이리스트 조회 성공', 'data': serializer.data}, status=status.HTTP_200_OK)
