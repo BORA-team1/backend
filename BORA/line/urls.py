@@ -9,5 +9,9 @@ urlpatterns = [
         path('<int:post_pk>/com/',MyLineComView.as_view()),
         path('<int:post_pk>/qna/',MyLineQnAView.as_view()),
         path('<int:post_pk>/emo/',MyLineEmoView.as_view()),
-        path('delete/<int:line_pk>/',MyLineDelete.as_view()),
+        path('delete/<int:line_pk>/',MyLineDeleteView.as_view()),
+        path('com/<int:line_pk>/',LineComView.as_view()),
+        path('com/del/<int:linecom_pk>/',DeleteComView.as_view()),
+        path('com/like/<int:linecom_pk>/',LineComLikeView.as_view()),
+        # path('com/del/<int:linecom_pk>/',DeleteComView.as_view()),
 ]

@@ -71,9 +71,52 @@ class MyLineEmoView(views.APIView):
         seri=MyLineandEmoSerializer(Lines,many=True, context={'request': request})  
         return Response({'message': '내 밑줄 감정표현 전체 조회 성공', 'data':{'Lines':seri.data}})
 
-class MyLineDelete(views.APIView):
+class MyLineDeleteView(views.APIView):
     permission_classes = [IsAuthenticated]
     def delete(self, request, line_pk):
         line=get_object_or_404(Line,line_id=line_pk)
         line.line_user.remove(request.user)
         return Response({"message": "내 밑줄 삭제 성공"})
+
+
+class LineComView(views.APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request, line_pk):
+        line= get_object_or_404(Line, line_id=line_pk)
+        linecoms=LineCom.objects.filter(linecom_line=line).all()
+        serializer=LineComSerializer(linecoms,context={'request': request},many=True)
+        return Response({'message': '밑줄 댓글 조회 성공', 'data': {'line_id':line.line_id,'content':line.content,'LineCom':serializer.data}}, status=status.HTTP_200_OK)
+
+    def post(self, request, line_pk):
+        line= get_object_or_404(Line, line_id=line_pk)
+        now_user=request.user
+        postsec=line.line_postsec
+        serializer = NewLineComSerializer(data={
+                    'content': request.data['content'],
+                    'linecom_line': line_pk,
+                    'linecom_postsec': postsec.sec_id,
+                    'linecom_user': now_user.id
+                })
+        if serializer.is_valid():
+            serializer.save()   
+            return Response({'message':'밑줄 댓글 등록 성공','data':{'linecom_line':serializer.data['linecom_line'],'linecom_id':serializer.data['linecom_id'],'linecom_user':serializer.data['linecom_user'],"content":serializer.data['content']}}, status=status.HTTP_201_CREATED)
+        return Response({'message':'밑줄 댓글 등록 실패','error':serializer.errors},status=status.HTTP_400_BAD_REQUEST)
+    
+class DeleteComView(views.APIView):
+    def delete(self,request, linecom_pk):
+        linecom=get_object_or_404(LineCom,linecom_id=linecom_pk)
+        linecom.delete()
+        return Response({"message": "밑줄 댓글 삭제 성공"})
+
+class LineComLikeView(views.APIView):
+    def post(self,request, linecom_pk):
+        linecom=get_object_or_404(LineCom,linecom_id=linecom_pk)
+        linecom.like.add(request.user)
+        serializer=LineComLikeSerializer(linecom,context={'request': request})
+        return Response({"message": "밑줄 댓글 좋아요 성공","data":serializer.data})
+    def delete(self,request, linecom_pk):
+        linecom=get_object_or_404(LineCom,linecom_id=linecom_pk)
+        linecom.like.remove(request.user)
+        serializer=LineComLikeSerializer(linecom,context={'request': request})
+        return Response({"message": "밑줄 댓글 좋아요 취소 성공","data":serializer.data})
+

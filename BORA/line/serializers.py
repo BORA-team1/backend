@@ -157,3 +157,48 @@ class MyLineandEmoSerializer(serializers.ModelSerializer):
         representation['Emotion'] = serializer.data  # 수정된 부분
 
         return representation
+    
+class LineComSerializer(serializers.ModelSerializer):
+    linecom_user=UserProfileSerializer()
+    do_like=serializers.SerializerMethodField()
+    likenum=serializers.SerializerMethodField()
+    LineComCom=LineComComSerializer(source='linecomcom_lineCom',many=True)
+    is_my=serializers.SerializerMethodField()
+    class Meta:
+        model=LineCom
+        fields=['linecom_id','content','linecom_user','do_like','likenum','is_my','LineComCom']
+
+    def get_do_like(self, obj):
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            return request.user in obj.like.all()
+        return False
+    def get_likenum(self, obj):
+        return obj.like.count()
+    def get_is_my(self, obj):
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            return obj.linecom_user == request.user
+        return False
+    
+class NewLineComSerializer(serializers.ModelSerializer):
+     class Meta:
+        model=LineCom
+        fields=['linecom_id','content','linecom_line','linecom_postsec','linecom_user']
+
+class LineComLikeSerializer(serializers.ModelSerializer):
+    do_like=serializers.SerializerMethodField()
+    like_num=serializers.SerializerMethodField()
+    class Meta:
+        model=LineCom
+        fields=['linecom_line','linecom_id','do_like','like_num']
+
+    def get_do_like(self, obj):
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            return request.user in obj.like.all()
+        return False
+    def get_like_num(self, obj):
+        return obj.like.count()
+
+    
