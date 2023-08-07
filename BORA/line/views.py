@@ -71,11 +71,9 @@ class MyLineEmoView(views.APIView):
         seri=MyLineandEmoSerializer(Lines,many=True, context={'request': request})  
         return Response({'message': '내 밑줄 감정표현 전체 조회 성공', 'data':{'Lines':seri.data}})
 
-
-# class Line(models.Model):
-#     line_id=models.AutoField(primary_key=True)
-#     sentence=models.IntegerField()
-#     content=models.TextField()
-#     line_post=models.ForeignKey(Post, related_name='line_post',on_delete=models.CASCADE)
-#     line_postsec=models.ForeignKey(PostSec, related_name='line_postsec',on_delete=models.CASCADE)
-#     line_user=models.ManyToManyField(User, related_name='line_user')
+class MyLineDelete(views.APIView):
+    permission_classes = [IsAuthenticated]
+    def delete(self, request, line_pk):
+        line=get_object_or_404(Line,line_id=line_pk)
+        line.line_user.remove(request.user)
+        return Response({"message": "내 밑줄 삭제 성공"})
