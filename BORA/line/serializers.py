@@ -132,32 +132,6 @@ class MyLineandQueSerializer(serializers.ModelSerializer):
         representation['Question'] = serializer.data  # 수정된 부분
 
         return representation
-    # def to_representation(self, instance):
-    #     representation = super().to_representation(instance)
-    #     request = self.context.get('request')
-        
-    #     if request:                                                     # is_my에서 requet.user가 필요하기 때문에 request넘기기 위해 to_representation함수
-    #         linecomcom_data = LineComComSerializer(instance.linecomcom_lineCom.all(), many=True, context={'request': request}).data
-    #         representation['LineComCom'] = linecomcom_data
-
-    #     return representation
-    # def to_representation(self, instance):                          # 현재 user의 LineCom만 가져오기위해 필터링
-    #     request = self.context.get('request')   
-    #     user = request.user                     
-
-    #     queryset = instance.linecom_line.filter(linecom_user=user)
-    #     serializer = MyLineComSerializer(queryset, many=True, context={'request': request}) # is_my, do_like를 위해 request를 넘겨야 함(현재 사용자가 누군지 알아야 하기 때문)
-    #     # print(request.user)
-    #     return {
-    #         'line_id': instance.line_id,
-    #         'content': instance.content,
-    #         'LineCom': serializer.data
-    #     }
-
-
-
-
-
 
 
 class MyLineEmoSerializer(serializers.ModelSerializer):
