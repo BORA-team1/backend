@@ -13,5 +13,6 @@ urlpatterns = [
         path('com/<int:line_pk>/',LineComView.as_view()),
         path('com/del/<int:linecom_pk>/',DeleteComView.as_view()),
         path('com/like/<int:linecom_pk>/',LineComLikeView.as_view()),
-        # path('com/del/<int:linecom_pk>/',DeleteComView.as_view()),
+        path('comcom/<int:linecom_pk>/',NewLineComComView.as_view()),
+        path('comcomdelete/<int:linecomcom_pk>/',DeleteComComView.as_view()),
 ]
