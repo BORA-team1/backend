@@ -134,3 +134,35 @@ class DeleteComComView(views.APIView):
         linecomcom=get_object_or_404(LineComCom,linecomcom_id=linecomcom_pk)
         linecomcom.delete()
         return Response({"message": "밑줄 댓글 답글 삭제 성공"})
+
+class LineQnAView(views.APIView):
+    def post(self, request, line_pk):
+        line=get_object_or_404(Line,line_id=line_pk)
+        postsec=line.line_postsec
+        now_user=request.user
+        newQue=NewQuestionSerializer(data=request.data)
+        if newQue.is_valid():
+            newQue.save(que_line=line,que_postsec=postsec,que_user=now_user)
+            return Response({"message": "밑줄 Q&A 등록 성공","data":{"que_line":line.line_id,"que_id":newQue.data['que_id'],'que_user':now_user.id,"content":newQue.data['content']}})
+    def get (self, request, line_pk):
+        line=get_object_or_404(Line,line_id=line_pk)
+        ques=Question.objects.filter(que_line=line).all()
+        queseri=QuestionSerializer(ques,many=True,context={'request': request})
+        return Response({"message": "밑줄 Q&A 조회 성공","data":{"line_id":line.line_id,"content":line.content,'Question':queseri.data}})
+    
+
+class DeleteQueView(views.APIView):
+    def delete (self, request, question_pk):
+        que=get_object_or_404(Question,que_id=question_pk)
+        que.delete()
+        return Response({"message": "밑줄 Q&A 삭제 성공"})
+
+class AnswerView(views.APIView):
+    def post(self, request,question_pk):
+        # que=get_object_or_404(Question,que_id=question_pk)
+        ansseri=NewAnswerSerializer(data={'content':request.data['content'],'ans_user':request.user.id,'ans_que':question_pk})
+        if ansseri.is_valid():
+            ans=ansseri.save()
+            return Response({"message": "밑줄 Q&A 답변 등록 성공","data":ansseri.data})
+        else:
+            return Response({"message": "밑줄 Q&A 답변 등록 실패","error":ansseri.errors},status=status.HTTP_400_BAD_REQUEST)
