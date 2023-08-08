@@ -242,3 +242,8 @@ class NewAnswerSerializer(serializers.ModelSerializer):
         model=Answer
         fields=['ans_id','content','ans_que','ans_user']
 
+class NewEmoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Emotion
+        fields=['emo_id','content','emo_line','emo_postsec','emo_user']
+

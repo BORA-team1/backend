@@ -159,10 +159,78 @@ class DeleteQueView(views.APIView):
 
 class AnswerView(views.APIView):
     def post(self, request,question_pk):
-        # que=get_object_or_404(Question,que_id=question_pk)
         ansseri=NewAnswerSerializer(data={'content':request.data['content'],'ans_user':request.user.id,'ans_que':question_pk})
         if ansseri.is_valid():
-            ans=ansseri.save()
+            ansseri.save()
             return Response({"message": "밑줄 Q&A 답변 등록 성공","data":ansseri.data})
         else:
             return Response({"message": "밑줄 Q&A 답변 등록 실패","error":ansseri.errors},status=status.HTTP_400_BAD_REQUEST)
+    
+class EmoView(views.APIView):
+    def post(self, request,line_pk):
+        line=get_object_or_404(Line,line_id=line_pk)
+        content=request.data['content']
+        postsec=line.line_postsec
+        now_user=request.user
+        if Emotion.objects.filter(emo_line=line_pk,emo_user=now_user.id).exists() :
+            return Response({"message": "이미 존재하는 감정표현입니다 "})
+        emo=NewEmoSerializer(data={
+            'content':content,
+            'emo_line':line.line_id,
+            'emo_postsec':postsec.sec_id,
+            'emo_user':now_user.id
+        })
+        if emo.is_valid():
+            emo.save()
+            return Response({"message": "밑줄 감정표현 등록 성공","data":emo.data})
+        else:
+            return Response({"message": "밑줄 감정표현 등록 실패","error":emo.errors},status=status.HTTP_400_BAD_REQUEST)
+    def get (self, request,line_pk):
+        line=get_object_or_404(Line,line_id=line_pk)
+        emos=Emotion.objects.filter(emo_line=line).all()  
+        is_my_1,is_my_2,is_my_3,is_my_4,is_my_5 =[False] * 5
+        
+        emo1s=emos.filter(content=1).all()
+        emo1count=emo1s.count()
+        for emo in emo1s:
+            if emo.emo_user==request.user : is_my_1=True
+
+        emo2s=emos.filter(content=2).all()
+        emo2count=emo2s.count()
+        for emo in emo2s:
+            if emo.emo_user==request.user : is_my_2=True
+        
+        emo3s=emos.filter(content=3).all()
+        emo3count=emo3s.count()
+        for emo in emo3s:
+            if emo.emo_user==request.user : is_my_3=True
+
+        emo4s=emos.filter(content=4).all()
+        emo4count=emo4s.count()
+        for emo in emo4s:
+            if emo.emo_user==request.user : is_my_4=True
+
+        emo5s=emos.filter(content=5).all()
+        emo5count=emo5s.count()
+        for emo in emo5s:
+            if emo.emo_user==request.user : is_my_5=True
+        
+        data = {
+                'line_id': line_pk,
+                'content': line.content,
+                'Emotion': [
+                    {'content': 1, 'num': emo1count, 'is_my': is_my_1},
+                    {'content': 2, 'num': emo2count, 'is_my': is_my_2},
+                    {'content': 3, 'num': emo3count, 'is_my': is_my_3},
+                    {'content': 4, 'num': emo4count, 'is_my': is_my_4},
+                    {'content': 5, 'num': emo5count, 'is_my': is_my_5},
+                ],
+            }
+
+        return Response({'message':"밑줄 감정표현 조회 성공","data":data})
+    def delete(self, request,line_pk):
+        line=get_object_or_404(Line,line_id=line_pk)
+        now_user=request.user
+        emo=Emotion.objects.filter(emo_line=line_pk,emo_user=now_user.id) 
+        emo.delete()
+        return Response({"message": "밑줄 감정표현 삭제 성공"})
