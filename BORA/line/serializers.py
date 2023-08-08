@@ -201,4 +201,8 @@ class LineComLikeSerializer(serializers.ModelSerializer):
     def get_like_num(self, obj):
         return obj.like.count()
 
-    
+
+class NewLineComComSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=LineComCom
+        fields=['linecomcom_id','linecomcom_user','content']

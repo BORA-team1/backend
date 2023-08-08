@@ -120,3 +120,17 @@ class LineComLikeView(views.APIView):
         serializer=LineComLikeSerializer(linecom,context={'request': request})
         return Response({"message": "밑줄 댓글 좋아요 취소 성공","data":serializer.data})
 
+class NewLineComComView(views.APIView):
+    def post(self, request, linecom_pk):
+        linecom=get_object_or_404(LineCom,linecom_id=linecom_pk)
+        newcomcom=NewLineComComSerializer(data={'content':request.data['content'],'linecomcom_user':request.user.id})
+        if newcomcom.is_valid():
+            newcomcom.save(linecomcom_lineCom=linecom)   # 시리얼라이저 필드에 없는 값 추가
+            return Response({'message':'밑줄 댓글 답글 등록 성공','data':newcomcom.data}, status=status.HTTP_201_CREATED)
+        return Response({'message':'밑줄 댓글 답글 작성 실패','error':newcomcom.errors},status=status.HTTP_400_BAD_REQUEST)
+
+class DeleteComComView(views.APIView):
+    def delete(self, request, linecomcom_pk):
+        linecomcom=get_object_or_404(LineComCom,linecomcom_id=linecomcom_pk)
+        linecomcom.delete()
+        return Response({"message": "밑줄 댓글 답글 삭제 성공"})
