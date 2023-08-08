@@ -29,7 +29,7 @@ class LineComCom(models.Model):
 class Question(models.Model):
     que_id=models.AutoField(primary_key=True)
     content=models.TextField()
-    num=models.IntegerField(null=True,blank=True,default=0)
+    # num=models.IntegerField(null=True,blank=True,default=0)
     que_line=models.ForeignKey(Line, related_name='que_line',on_delete=models.CASCADE)
     que_postsec=models.ForeignKey(PostSec, related_name='que_postsec',on_delete=models.CASCADE)
     que_user=models.ForeignKey(User, related_name='que_user',on_delete=models.SET_NULL,null=True)

@@ -206,3 +206,39 @@ class NewLineComComSerializer(serializers.ModelSerializer):
     class Meta:
         model=LineComCom
         fields=['linecomcom_id','linecomcom_user','content']
+
+class AnswerSerializer(serializers.ModelSerializer):
+    ans_user=UserProfileSerializer()
+    class Meta:
+        model=Answer
+        fields=['ans_id','content','ans_user']
+
+class QuestionSerializer(serializers.ModelSerializer):
+    num=serializers.SerializerMethodField()
+    is_my=serializers.SerializerMethodField()
+    que_user=UserProfileSerializer()
+    Answer=AnswerSerializer(source='ans_que',many=True)
+    class Meta:
+        model=Question
+        fields=['que_id','content','num','is_my','que_user','Answer']
+    def get_num(self, obj):
+        ans=Answer.objects.filter(ans_que=obj).all()
+        return ans.count()
+    def get_is_my(self, obj):
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            return obj.que_user == request.user
+        return False
+
+
+
+class NewQuestionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Question
+        fields=['que_id','content']
+
+class NewAnswerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Answer
+        fields=['ans_id','content','ans_que','ans_user']
+
