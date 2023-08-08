@@ -18,6 +18,5 @@ urlpatterns = [
         path('qna/<int:line_pk>/',LineQnAView.as_view()),
         path('qnadelete/<int:question_pk>/',DeleteQueView.as_view()),
         path('ans/<int:question_pk>/',AnswerView.as_view()),
-        # path('comcomdelete/<int:linecomcom_pk>/',DeleteComComView.as_view()),
-
+        path('emo/<int:line_pk>/',EmoView.as_view()),
 ]
