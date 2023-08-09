@@ -192,3 +192,21 @@ class PostDetailView(views.APIView):
         }
     
         return Response({'message':'게시물 상세 조회 성공',"data":data}, status=status.HTTP_200_OK)
+
+class PostAllContentView(views.APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request,post_pk):
+        # post
+        post=get_object_or_404(Post,post_id=post_pk)
+
+        # postsec 순서대로 
+        postsecs=PostSec.objects.filter(sec_post=post.post_id).order_by('num').all()
+        postsecseri=PostSecContentSerializer(postsecs,many=True,context={'request': request})
+
+        data={
+            "post_id": post.post_id,
+            "title": post.title,
+            "PostSec": postsecseri.data
+        }
+    
+        return Response({'message':'게시물 콘텐츠 모아보기 성공',"data":data}, status=status.HTTP_200_OK)
