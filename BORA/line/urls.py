@@ -19,7 +19,7 @@ urlpatterns = [
         path('qnadelete/<int:question_pk>/',DeleteQueView.as_view()),
         path('ans/<int:question_pk>/',AnswerView.as_view()),
         path('emo/<int:line_pk>/',EmoView.as_view()),
-        path('com/w/<int:post_pk>/',Com2View.as_view()),
-        path('qna/w/<int:post_pk>/',QnA2View.as_view()),
-        path('emo/w/<int:post_pk>/',Emo2View.as_view()),
+        path('com/w/<int:post_pk>/',LineCom2View.as_view()),
+        path('qna/w/<int:post_pk>/',LineQnA2View.as_view()),
+        path('emo/w/<int:post_pk>/',LineEmo2View.as_view()),
 ]
