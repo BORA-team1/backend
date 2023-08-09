@@ -14,6 +14,7 @@ import random
 from django.db.models import Count, F
 from audio.models import Audio
 from account.models import User
+from han.models import Han
 
 # Create your views here.
 
@@ -157,3 +158,37 @@ class BookMarkView(views.APIView):
             post.bookmark.add(user)
             return Response({'message':'북마크 성공'}, status=status.HTTP_200_OK)
             
+class PostDetailView(views.APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request,post_pk):
+        post=get_object_or_404(Post,post_id=post_pk)
+        author=post.post_user.nickname
+        hashtag=post.hashtag.all()
+        hash=InterestSerializer(hashtag,many=True)
+        # postserializer=PostDetailSerializer(post)
+        audio=Audio.objects.filter(audio_post=post_pk).first()
+
+        postsecs=PostSec.objects.filter(sec_post=post.post_id).order_by('num').all()
+        postsecseri=PostSecSerializer(postsecs,many=True,context={'request': request})
+
+        # han
+        han_count=Han.objects.filter(han_post=post.post_id).count()
+        besthan=Han.objects.annotate(like_count=Count('like')).order_by('-like_count').first()
+        besthanseri=HanSerializer(besthan,context={'request': request})
+
+
+        data={
+            "post_id": post.post_id,
+            "title": post.title,
+            "post_image": post.post_image,
+            "diff": post.diff ,     
+            "author": author,  
+            "date": post.date,
+            "hashtag": hash.data,
+            "Audio": audio.audio_id,                   
+            "PostSec": postsecseri.data,
+            "HanNum": han_count,
+            "Han": besthanseri.data
+        }
+    
+        return Response({'message':'게시물 상세 조회 성공',"data":data}, status=status.HTTP_200_OK)

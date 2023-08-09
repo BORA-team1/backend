@@ -9,4 +9,5 @@ urlpatterns = [
     path('',MainView.as_view()),
     path('lists/',PostListView.as_view()),
     path('<int:post_pk>/bookmark',BookMarkView.as_view()),
+    path('<int:post_pk>/',PostDetailView.as_view())
 ]
