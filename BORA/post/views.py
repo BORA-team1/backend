@@ -123,5 +123,24 @@ class MainView(views.APIView):
         }
         return Response({'message':'보는 아티클 홈 조회 성공', 'data': data}, status=status.HTTP_200_OK)
 
+class PostListView(views.APIView):
+    def get(self, request):
+        all_posts = Post.objects.all()
+        for post in all_posts:
+            post.author=post.post_user.nickname
+            if Vote.objects.filter(vote_post=post.post_id).exists():
+                post.is_vote=True
+            lines=Line.objects.filter(line_post=post.post_id).all()
+            if Question.objects.filter(que_line__in=lines).exists():
+                post.is_que=True
+            if Debate.objects.filter(debate_line__in=lines).exists():
+                post.is_debate=True
+        postlistseri = PostSearchSerializer(all_posts, many=True)
 
+        count=all_posts.count()
+        data={
+            "count":count,
+            "Post": postlistseri.data
+        }
 
+        return Response({'message':'보는 아티클 전체 조회 성공', 'data': data}, status=status.HTTP_200_OK)
