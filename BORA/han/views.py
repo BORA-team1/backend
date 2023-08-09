@@ -11,7 +11,7 @@ from .serializers import *
 #한마디 조회/작성/삭제
 class HanView(views.APIView):
     serializer_class = HanSerializer
-    permission_classes = [IsAuthenticated] 
+    permission_classes = [IsAuthenticated]  
     #한마디 조회
     def get(self, request, han_id):                     
         han=get_object_or_404(Han, pk=han_id)
