@@ -13,10 +13,11 @@ class HanView(views.APIView):
     serializer_class = HanSerializer
     permission_classes = [IsAuthenticated] 
     #한마디 조회
-    def get(self, request):                     
-        post=HanSerializer(request.post)      
-        return Response({'message': '한마디 조회 성공', 'data': {'post': post.data}}, status=HTTP_200_OK)
-    #한마디 작성
+    def get(self, request, han_id):                     
+        han=get_object_or_404(Han, pk=han_id)
+        serializer = HanSerializer(Han, many=True)     
+        return Response({'message': '한마디 조회 성공', 'data': {'han': han.data}}, status=HTTP_200_OK)
+    #한마디 등록
     def post(self, request, pk):
         data = {
             'han_id' : pk,
