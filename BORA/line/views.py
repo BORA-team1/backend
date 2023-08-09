@@ -108,17 +108,11 @@ class MyLineCom2View(views.APIView):
     def get(self, request, post_pk):
         postsec=request.data['line_postsec']
         sentence=request.data['sentence']
-        # line_content=request.data['line_content']
-        # content=request.data['content']
 
-        # line= get_object_or_404(line_post=post_pk,line_postsec=postsec,sentence=sentence)
-        
         try:
             line = Line.objects.get(line_post=post_pk, line_postsec=postsec, sentence=sentence)
         except Line.DoesNotExist:
             return Response({'message': '이 문장에 해당하는 댓글이 없습니다!'}, status=status.HTTP_404_NOT_FOUND)
-
-        # line을 사용하여 원하는 작업을 수행
 
         linecoms=LineCom.objects.filter(linecom_line=line).all()
         serializer=LineComSerializer(linecoms,context={'request': request},many=True)
@@ -132,7 +126,9 @@ class MyLineCom2View(views.APIView):
         post= get_object_or_404(Post, post_id=post_pk)
 
         line,created= Line.objects.get_or_create(line_post=post,line_postsec=postsec,sentence=sentence)
-        if created: line.content=line_content
+        if created: 
+            line.content=line_content
+            line.save()
 
         now_user=request.user
         postsec=line.line_postsec
@@ -195,7 +191,37 @@ class LineQnAView(views.APIView):
         ques=Question.objects.filter(que_line=line).all()
         queseri=QuestionSerializer(ques,many=True,context={'request': request})
         return Response({"message": "밑줄 Q&A 조회 성공","data":{"line_id":line.line_id,"content":line.content,'Question':queseri.data}})
-    
+
+class MyLineQnA2View(views.APIView):
+    def post(self, request, post_pk):
+        postsec=get_object_or_404(PostSec, sec_id=request.data['line_postsec'])
+        sentence=request.data['sentence']
+        line_content=request.data['line_content']
+        content=request.data['content']
+        post= get_object_or_404(Post, post_id=post_pk)
+
+        line,created= Line.objects.get_or_create(sentence=sentence,line_post=post,line_postsec=postsec)
+        if created: 
+            line.content=line_content
+            line.save()
+
+        now_user=request.user
+        newQue=NewQuestionSerializer(data=request.data)
+        if newQue.is_valid():
+            newQue.save(que_line=line,que_postsec=postsec,que_user=now_user)
+            return Response({"message": "밑줄 Q&A 등록 성공!","data":{"que_line":line.line_id,"que_id":newQue.data['que_id'],'que_user':now_user.id,"content":newQue.data['content']}})
+    def get (self, request, post_pk):
+        postsec=request.data['line_postsec']
+        sentence=request.data['sentence']
+        try:
+            line = Line.objects.get(line_post=post_pk, line_postsec=postsec, sentence=sentence)
+        except Line.DoesNotExist:
+            return Response({'message': '이 문장에 해당하는 질문이 없습니다!'}, status=status.HTTP_404_NOT_FOUND)
+
+        ques=Question.objects.filter(que_line=line).all()
+        queseri=QuestionSerializer(ques,many=True,context={'request': request})
+        return Response({"message": "밑줄 Q&A 조회 성공!","data":{"line_id":line.line_id,"content":line.content,'Question':queseri.data}})
+
 
 class DeleteQueView(views.APIView):
     def delete (self, request, question_pk):
