@@ -11,11 +11,11 @@ from .serializers import *
 #한마디 조회/작성/삭제
 class HanView(views.APIView):
     serializer_class = HanSerializer
-    permission_classes = [IsAuthenticated] 
+    permission_classes = [IsAuthenticated]  
     #한마디 조회
     def get(self, request, han_id):                     
         han=get_object_or_404(Han, pk=han_id)
-        serializer = HanSerializer(Han, many=True)     
+        serializer = self.serializer_class(han) #인스턴스 생성 시 han 전달     
         return Response({'message': '한마디 조회 성공', 'data': {'han': han.data}}, status=HTTP_200_OK)
     #한마디 등록
     def post(self, request, pk):
