@@ -54,11 +54,6 @@ class QuestionPostSerializer(serializers.ModelSerializer):
         model = Question
         fields=['que_id']
 
-# class EmoPostSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Emotion
-#         fields=['emo_id','content']
-
 class IngVotePostSerializer(serializers.ModelSerializer):
     vote_user=UserProfileSerializer()
     class Meta:
@@ -249,7 +244,6 @@ class EmotionCountSerializer(serializers.Serializer):
         request = self.context.get('request')
         line=self.context.get('line')
         user=request.user
-        print(user.nickname)
         if request and request.user.is_authenticated:
             if Emotion.objects.filter(content=obj['content'], emo_user=user,emo_line=line).exists():
                 return True
