@@ -102,6 +102,52 @@ class LineComView(views.APIView):
             return Response({'message':'밑줄 댓글 등록 성공','data':{'linecom_line':serializer.data['linecom_line'],'linecom_id':serializer.data['linecom_id'],'linecom_user':serializer.data['linecom_user'],"content":serializer.data['content']}}, status=status.HTTP_201_CREATED)
         return Response({'message':'밑줄 댓글 등록 실패','error':serializer.errors},status=status.HTTP_400_BAD_REQUEST)
     
+
+class MyLineCom2View(views.APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request, post_pk):
+        postsec=request.data['line_postsec']
+        sentence=request.data['sentence']
+        # line_content=request.data['line_content']
+        # content=request.data['content']
+
+        # line= get_object_or_404(line_post=post_pk,line_postsec=postsec,sentence=sentence)
+        
+        try:
+            line = Line.objects.get(line_post=post_pk, line_postsec=postsec, sentence=sentence)
+        except Line.DoesNotExist:
+            return Response({'message': '이 문장에 해당하는 댓글이 없습니다!'}, status=status.HTTP_404_NOT_FOUND)
+
+        # line을 사용하여 원하는 작업을 수행
+
+        linecoms=LineCom.objects.filter(linecom_line=line).all()
+        serializer=LineComSerializer(linecoms,context={'request': request},many=True)
+        return Response({'message': '밑줄 댓글 조회 성공!', 'data': {'line_id':line.line_id,'content':line.content,'LineCom':serializer.data}}, status=status.HTTP_200_OK)
+
+    def post(self, request, post_pk):
+        postsec=get_object_or_404(PostSec, sec_id=request.data['line_postsec'])
+        sentence=request.data['sentence']
+        line_content=request.data['line_content']
+        content=request.data['content']
+        post= get_object_or_404(Post, post_id=post_pk)
+
+        line,created= Line.objects.get_or_create(line_post=post,line_postsec=postsec,sentence=sentence)
+        if created: line.content=line_content
+
+        now_user=request.user
+        postsec=line.line_postsec
+        serializer = NewLineComSerializer(data={
+                    'content': content,
+                    'linecom_line': line.line_id,
+                    'linecom_postsec': postsec.sec_id,
+                    'linecom_user': now_user.id
+                })
+        if serializer.is_valid():
+            serializer.save()   
+            return Response({'message':'밑줄 댓글 등록 성공!','data':{'linecom_line':serializer.data['linecom_line'],'linecom_id':serializer.data['linecom_id'],'linecom_user':serializer.data['linecom_user'],"content":serializer.data['content']}}, status=status.HTTP_201_CREATED)
+        return Response({'message':'밑줄 댓글 등록 실패!','error':serializer.errors},status=status.HTTP_400_BAD_REQUEST)
+    
+    
 class DeleteComView(views.APIView):
     def delete(self,request, linecom_pk):
         linecom=get_object_or_404(LineCom,linecom_id=linecom_pk)
