@@ -44,15 +44,15 @@ class PostDetailSerializer(serializers.ModelSerializer):
 
 #-------------세부 포스트----------------
 
-# class LineComPostSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = LineCom
-#         fields=['linecom_id']
+class LineComPostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LineCom
+        fields=['linecom_id']
 
-# class QuestionPostSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Question
-#         fields=['que_id']
+class QuestionPostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Question
+        fields=['que_id']
 
 # class EmoPostSerializer(serializers.ModelSerializer):
 #     class Meta:
@@ -78,81 +78,99 @@ class DoneVotePostSerializer(serializers.ModelSerializer):
                 result[f"result{select}_{age}"] = VotePer.objects.filter(voteper_vote=instance, age=age, select=select).count()
         return result
     
-# class DebatePostSerializer(serializers.ModelSerializer):
-#     debate_user=UserProfileSerializer(many=True,source='debaters')
-#     class Meta:
-#         model = Debate
-#         fields = ['debate_id', 'title', 'cond','debate_user']
+class DebatePostSerializer(serializers.ModelSerializer):
+    debate_user=UserProfileSerializer(many=True,source='debaters')
+    class Meta:
+        model = Debate
+        fields = ['debate_id', 'title', 'cond','debate_user']
 
-# class LineSerializer(serializers.ModelSerializer):
-#     LineCom = LineComPostSerializer(many=True,source='linecom_line')
-#     Question = QuestionPostSerializer(many=True, source='que_line')
-#     Emotion = EmoPostSerializer(many=True, source='emo_line')
-#     IngVote=serializers.SerializerMethodField()
-#     DoneVote=serializers.SerializerMethodField()
-#     is_my=serializers.SerializerMethodField()
-#     Debate=DebatePostSerializer(many=True, source='debate_line')
+class LineSerializer(serializers.ModelSerializer):
+    LineCom = LineComPostSerializer(many=True,source='linecom_line')
+    Question = QuestionPostSerializer(many=True, source='que_line')
+    Emotion =serializers.SerializerMethodField()
+    IngVote=serializers.SerializerMethodField()
+    DoneVote=serializers.SerializerMethodField()
+    is_my=serializers.SerializerMethodField()
+    Debate=DebatePostSerializer(many=True, source='debate_line')
     
-#     class Meta:
-#         model = Line
-#         fields = ['line_id', 'sentence', 'content', 'is_my', 'LineCom', 'Question', 'Emotion', 'IngVote', 'DoneVote','Debate']
+    class Meta:
+        model = Line
+        fields = ['line_id', 'sentence', 'content', 'is_my', 'LineCom', 'Question', 'Emotion', 'IngVote', 'DoneVote','Debate']
 
-#     def get_is_my(self, obj):
-#         request = self.context.get('request')
-#         if request.user in obj.line_user.all():
-#             return True
-#         else:
-#             return False
+    def get_is_my(self, obj):
+        request = self.context.get('request')
+        if request.user in obj.line_user.all():
+            return True
+        else:
+            return False
     
-#     def get_IngVote(self, obj):
-#         ing_votes = obj.vote_line.filter(is_done=False)
-#         serializer = IngVotePostSerializer(ing_votes, many=True)
-#         return serializer.data
+    def get_IngVote(self, obj):
+        ing_votes = obj.vote_line.filter(is_done=False)
+        serializer = IngVotePostSerializer(ing_votes, many=True)
+        return serializer.data
 
-#     def get_DoneVote(self, obj):
-#         done_votes = obj.vote_line.filter(is_done=True)
-#         serializer = DoneVotePostSerializer(done_votes, many=True)
-#         return serializer.data
+    def get_DoneVote(self, obj):
+        done_votes = obj.vote_line.filter(is_done=True)
+        serializer = DoneVotePostSerializer(done_votes, many=True)
+        return serializer.data
+    
+    def get_Emotion(self, instance):
+        request = self.context.get('request')
+        line_id = instance.line_id
+        
+        # 해당 Line에 연결된 Emotion 중에서 content별로 사용자 수를 계산
+        emotion_counts = Emotion.objects.filter(emo_line_id=line_id).values('content').annotate(num=Count('emo_id'))
+        
+        # content 순서에 따라 결과를 만들기 위해 딕셔너리로 변환
+        emotion_count_dict = {item['content']: item['num'] for item in emotion_counts}
+        
+        # 모든 content에 대해 결과를 생성하며, 없으면 기본값인 0 사용
+        result = [
+            {'content': content, 'num': emotion_count_dict.get(content, 0)}
+            for content in range(1, 6)  # content는 1부터 5까지의 숫자
+        ]
+        
+        return EmotionCountSerializer(result, many=True, context={'request': request, 'line': line_id}).data
 
 
-# class PostSecSerializer(serializers.ModelSerializer):
-#     Lines=LineSerializer(many=True,source='line_postsec')
-#     class Meta:
-#         model=PostSec
-#         fields=['sec_id','num','title','content','Lines']
-#     def to_representation(self, instance):                  
-#         request = self.context.get('request')   
-#         representation = super().to_representation(instance)
-#         lines = instance.line_postsec.all().order_by('sentence')
+class PostSecSerializer(serializers.ModelSerializer):
+    Lines=LineSerializer(many=True,source='line_postsec')
+    class Meta:
+        model=PostSec
+        fields=['sec_id','num','title','content','Lines']
+    def to_representation(self, instance):                  
+        request = self.context.get('request')   
+        representation = super().to_representation(instance)
+        lines = instance.line_postsec.all().order_by('sentence')
 
-#         serializer = LineSerializer(lines, many=True, context={'request': request},source='line_postsec') 
-#         representation['Lines'] = serializer.data
+        serializer = LineSerializer(lines, many=True, context={'request': request},source='line_postsec') 
+        representation['Lines'] = serializer.data
 
-#         return representation
+        return representation
     
 
-# class HanSerializer(serializers.ModelSerializer):
-#     han_user=UserProfileSerializer()
-#     like_num=serializers.SerializerMethodField()
-#     do_like=serializers.SerializerMethodField()
+class HanSerializer(serializers.ModelSerializer):
+    han_user=UserProfileSerializer()
+    like_num=serializers.SerializerMethodField()
+    do_like=serializers.SerializerMethodField()
     
-#     class Meta:
-#         model=Han
-#         fields=['han_id','content', 'do_like', 'like_num','han_user']
+    class Meta:
+        model=Han
+        fields=['han_id','content', 'do_like', 'like_num','han_user']
 
-#     def get_is_my(self, obj):
-#         request = self.context.get('request')
-#         if request and request.user.is_authenticated:
-#             return obj.que_user == request.user
-#         return False
-#     def get_do_like(self, obj):
-#         request = self.context.get('request')
-#         if request.user in obj.like.all():
-#             return True
-#         else:
-#             return False
-#     def get_like_num(self, obj):
-#         return obj.like.count()
+    def get_is_my(self, obj):
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            return obj.que_user == request.user
+        return False
+    def get_do_like(self, obj):
+        request = self.context.get('request')
+        if request.user in obj.like.all():
+            return True
+        else:
+            return False
+    def get_like_num(self, obj):
+        return obj.like.count()
     
 
 #-------------콘텐츠 모아보기----------------
@@ -223,9 +241,6 @@ class QuestionContentSerializer(serializers.ModelSerializer):
             return obj.que_user == request.user
         return False
 
-
-
-
 class EmotionCountSerializer(serializers.Serializer):
     content = serializers.IntegerField()
     num = serializers.IntegerField()
@@ -242,13 +257,6 @@ class EmotionCountSerializer(serializers.Serializer):
                 return False
         return False
     
-    
-
-# class EmoPostSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Emotion
-#         fields=['emo_id','content']
-
     
 class DebateContentSerializer(serializers.ModelSerializer):
     debate_user=UserProfileSerializer()
@@ -278,23 +286,7 @@ class LineContentSerializer(serializers.ModelSerializer):
         done_votes = obj.vote_line.filter(is_done=True)
         serializer = DoneVotePostSerializer(done_votes, many=True)
         return serializer.data
-
-    # def get_Emotion(self, instance):
-    #     request = self.context.get('request')
-    #     # 감정표현(1~5) 별로 사용자 수를 계산
-    #     emotion_counts = Emotion.objects.values('content').annotate(num=Count('emo_id'))
-        
-    #     # content 순서에 따라 결과를 만들기 위해 딕셔너리로 변환
-    #     emotion_count_dict = {item['content']: item['num'] for item in emotion_counts}
-        
-    #     # 모든 content에 대해 결과를 생성하며, 없으면 기본값인 0 사용
-    #     result = [
-    #         {'content': content, 'num': emotion_count_dict.get(content, 0)}
-    #         for content in range(1, 6)  # content는 1부터 5까지의 숫자
-    #     ]
-        
-    #     return EmotionCountSerializer(result, many=True,context={'request': request,'line': instance.line_id}).data
-
+    
     def get_Emotion(self, instance):
         request = self.context.get('request')
         line_id = instance.line_id
