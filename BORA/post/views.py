@@ -144,3 +144,16 @@ class PostListView(views.APIView):
         }
 
         return Response({'message':'보는 아티클 전체 조회 성공', 'data': data}, status=status.HTTP_200_OK)
+    
+class BookMarkView(views.APIView):
+    permission_classes = [IsAuthenticated]
+    def post(self, request, post_pk):
+        user = request.user
+        post=get_object_or_404(Post,post_id=post_pk)
+        if post.bookmark.filter(pk=user.id).exists():
+            post.bookmark.remove(user)
+            return Response({'message':'북마크 취소 성공'}, status=status.HTTP_200_OK)
+        else:
+            post.bookmark.add(user)
+            return Response({'message':'북마크 성공'}, status=status.HTTP_200_OK)
+            
