@@ -5,4 +5,7 @@ from .views import *
 app_name='debate'      
 
 urlpatterns = [
+    path('ing/<int:post_pk>/',IngDebateView.as_view()),
+    path('done/<int:post_pk>/',DoneDebateView.as_view()),
+    path('my/<int:post_pk>/',MyDebateView.as_view()),
 ]
