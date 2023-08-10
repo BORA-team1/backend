@@ -25,5 +25,6 @@ urlpatterns = [
     path('han/',include('han.urls')),
     path('line/',include('line.urls')),
     path('debate/',include('debate.urls')),
+    path('vote/',include('vote.urls')),
     path('audio/',include('audio.urls')),
 ]
