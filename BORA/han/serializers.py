@@ -14,9 +14,10 @@ class HanSerializer(serializers.ModelSerializer):
     do_like=serializers.BooleanField(default=False)
     like_num=serializers.IntegerField()
     HanCom = serializers.SerializerMethodField()
+    is_my=serializers.BooleanField(default=False)
     class Meta:
         model = Han
-        fields = ['han_id', 'content','do_like','like_num', 'han_user','HanCom']
+        fields = ['han_id', 'content','do_like','like_num','is_my', 'han_user','HanCom']
     def get_HanCom(self, obj):
         hancoms = HanCom.objects.filter(hancom_han=obj).order_by('created_at').all()
         serializer = HanComSerializer(hancoms, many=True)

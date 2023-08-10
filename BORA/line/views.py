@@ -165,7 +165,7 @@ class LineComLikeView(views.APIView):
 class NewLineComComView(views.APIView):
     def post(self, request, linecom_pk):
         linecom=get_object_or_404(LineCom,linecom_id=linecom_pk)
-        newcomcom=NewLineComComSerializer(data={'content':request.data['content'],'linecomcom_user':request.user.id})
+        newcomcom=NewLineComComSerializer(data={'content':request.data['content'],'mention':request.data['mention'],'linecomcom_user':request.user.id})
         if newcomcom.is_valid():
             newcomcom.save(linecomcom_lineCom=linecom)   # 시리얼라이저 필드에 없는 값 추가
             return Response({'message':'밑줄 댓글 답글 등록 성공','data':newcomcom.data}, status=status.HTTP_201_CREATED)

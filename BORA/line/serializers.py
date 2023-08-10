@@ -14,7 +14,7 @@ class LineComComSerializer(serializers.ModelSerializer):
     is_my=serializers.SerializerMethodField(default=False)
     class Meta:
         model=LineComCom
-        fields=['linecomcom_id','content','is_my','linecomcom_user'] # related_name으로 쓰면 자동으로 중첩 시리얼라이저를 통해 역참조
+        fields=['linecomcom_id','content','is_my','mention','linecomcom_user'] # related_name으로 쓰면 자동으로 중첩 시리얼라이저를 통해 역참조
     def get_is_my(self, obj):
         request = self.context.get('request')
         print(request)
@@ -205,7 +205,7 @@ class LineComLikeSerializer(serializers.ModelSerializer):
 class NewLineComComSerializer(serializers.ModelSerializer):
     class Meta:
         model=LineComCom
-        fields=['linecomcom_id','linecomcom_user','content']
+        fields=['linecomcom_id','linecomcom_user','content','mention']
 
 class AnswerSerializer(serializers.ModelSerializer):
     ans_user=UserProfileSerializer()

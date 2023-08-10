@@ -25,6 +25,7 @@ class LineComCom(models.Model):
     content=models.TextField()
     linecomcom_lineCom=models.ForeignKey(LineCom, related_name='linecomcom_lineCom',on_delete=models.CASCADE)
     linecomcom_user=models.ForeignKey(User, related_name='linecomcom_user',on_delete=models.CASCADE)
+    mention=models.CharField(max_length=40,null=True)
 
 class Question(models.Model):
     que_id=models.AutoField(primary_key=True)
