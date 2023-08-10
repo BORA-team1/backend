@@ -59,10 +59,10 @@ class VoteIngView(generics.ListAPIView):
 class DoneVoteView(generics.RetrieveAPIView):
     #완료된 투표 조회
     serializer_class = DoneVoteSerializer
-
+    #lookup_field = 'post_pk'
     def get_queryset(self):
         user = self.request.user
-        return Vote.objects.filter(is_done=True, vote_per_vote__voteper_user=user)
+        return Vote.objects.filter(is_done=True, vote_user=user)
 
 class MyCreatingVoteView(generics.ListAPIView):
     #내가 만든 투표 조회
