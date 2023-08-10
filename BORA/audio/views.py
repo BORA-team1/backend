@@ -14,13 +14,14 @@ class AudioDetailView(views.APIView):
         serializer = AudioDetailSerializer(audio)
         postsecs=PostSec.objects.filter(sec_post=audio.audio_post).all()
         postsecseri=PostSecInAudioSerializer(postsecs, many=True).data
-        audiosecs=AudioSec.objects.filter(audiosec_audio=audio)
-        audiosecseri=AudioSecInAudioSerializer(audiosecs, many=True).data
+        # audiosecs=AudioSec.objects.filter(audiosec_audio=audio)
+        # audiosecseri=AudioSecInAudioSerializer(audiosecs, many=True).data
         data={
             "audio_id":serializer.data['audio_id'],
             "audio_post": serializer.data['audio_post'],
-            "PostSec":postsecseri,
-            "AudioSec":audiosecseri
+            "audiofile":serializer.data['audiofile'],
+            "PostSec":postsecseri
+            # "AudioSec":audiosecseri
         }
         return Response({'message': '오디오북 상세 조회 성공', 'data': data}, status=status.HTTP_200_OK)
     

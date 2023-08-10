@@ -8,12 +8,13 @@ class Audio(models.Model):
     audio_id=models.AutoField(primary_key=True)
     long=models.IntegerField()
     audio_post=models.ForeignKey(Post,related_name='audio_post',on_delete=models.CASCADE)
-
-class AudioSec(models.Model):
-    audiosec_id=models.AutoField(primary_key=True)
-    num=models.IntegerField()
     audiofile=models.TextField( null=True, blank=True)
-    audiosec_audio=models.ForeignKey(Audio,related_name='audiosec_audio',on_delete=models.CASCADE)
+
+# class AudioSec(models.Model):
+#     audiosec_id=models.AutoField(primary_key=True)
+#     num=models.IntegerField()
+#     audiofile=models.TextField( null=True, blank=True)
+#     audiosec_audio=models.ForeignKey(Audio,related_name='audiosec_audio',on_delete=models.CASCADE)
 
 class Playlist(models.Model):
     playlist_id=models.AutoField(primary_key=True)
