@@ -54,7 +54,7 @@ class HanDelView(views.APIView):
 
 #한마디 추천 관련 view
 class HanRecommendView(views.APIView):
-    # serializer_class = HanSerializer
+    serializer_class = NewHanSerializer
     permission_classes = [IsAuthenticated] 
     #한마디 추천
     def post(self, request, han_pk):
