@@ -17,3 +17,5 @@ class HanCom(models.Model):
     content=models.TextField()
     hancom_han=models.ForeignKey(Han, related_name='hancom_han',on_delete=models.CASCADE)
     hancom_user=models.ForeignKey(User, related_name='hancom_user',on_delete=models.CASCADE)
+    mention=models.CharField(max_length=40,null=True)
+    created_at=models.DateTimeField(auto_now_add=True)
