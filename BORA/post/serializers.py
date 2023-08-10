@@ -174,7 +174,7 @@ class LineComComContentSerializer(serializers.ModelSerializer):
     is_my=serializers.SerializerMethodField()
     class Meta:
         model = LineComCom
-        fields=['linecomcom_id','content','is_my','linecomcom_user']
+        fields=['linecomcom_id','content','is_my','mention','linecomcom_user']
     def get_is_my(self, obj):
         request = self.context.get('request')
         if request and request.user.is_authenticated:

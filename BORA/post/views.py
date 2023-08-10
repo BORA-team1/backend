@@ -44,7 +44,8 @@ class MainView(views.APIView):
         user = request.user
         # 랜덤 추천
         all_posts = Post.objects.all()
-        random_posts = random.sample(list(all_posts), 5)
+        ran_size = min(5, len(all_posts))  # 리스트 크기보다 크지 않은 값을 선택
+        random_posts = random.sample(list(all_posts), ran_size)
         for randompost in random_posts:
             if randompost.bookmark.filter(pk=user.id).exists():
                 randompost.is_booked=True
@@ -89,9 +90,11 @@ class MainView(views.APIView):
                 post.is_debate=True
         heavyseri = PostSearchSerializer(heavys, many=True)
 
+        print(user.age)
         # 랜덤 나이대
-        # random_age = random.randint(1, 5)
-        random_age =4 # 40대로 고정
+        random_age = random.randint(1, 5)
+        while random_age == user.age:  random_age = random.randint(1, 5)
+        # random_age =4 # 40대로 고정
         print(random_age)
 
         # ??나이대가 가장 많이 밑줄그은 Line
@@ -115,6 +118,7 @@ class MainView(views.APIView):
             "PostMed":mediseri.data,
             "PostHeavy":heavyseri.data,
             "HotLine":{
+                "hot_age": random_age,
                 "content": hotline_content,
                 "author": hotline_author
             },

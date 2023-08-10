@@ -7,14 +7,17 @@ from account.models import User
 from post.models import Post
 from audio.models import Playlist,Audio
 
-
+# class FollowsSerializer(serializers.ModelSerializer):
+#     follow=UserProfileSerializer(many=True, read_only=True)
+#     class Meta:
+#         model=User
+#         fields=['follow']
 
 class MyPageSerializer(serializers.ModelSerializer):
-    follow=UserProfileSerializer(many=True, read_only=True)
     interest=InterestSerializer(many=True, read_only=True)
     class Meta:
         model=User
-        fields=['id','profile','nickname','interest','follow']
+        fields=['id','profile','nickname','interest']
 
 class BookPostSerializer(serializers.ModelSerializer):
     hashtag=InterestSerializer(many=True, read_only=True)

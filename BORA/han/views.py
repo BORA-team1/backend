@@ -24,6 +24,8 @@ class HanView(views.APIView):
             if han.like.filter(pk=user.id).exists():
                 han.do_like=True
             han.like_num=han.like.count()
+            if han.han_user==user:
+                han.is_my=True
 
         serializer = HanSerializer(hans,many=True)           #인스턴스 생성 시 han 전달     
         return Response({'message': '한마디 조회 성공', 'data': {"han": serializer.data}}, status=status.HTTP_200_OK)

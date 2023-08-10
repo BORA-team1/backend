@@ -18,15 +18,24 @@ class MyPageView(views.APIView):
         # my 정보
         user=MyPageSerializer(request.user)      # 현재 로그인한 유저 정보 가져옴
         # 북마크한 Post
-        now_user = request.user                                    # 현재 사용자                             
-        book_posts= Post.objects.filter(bookmark=now_user.id)      # 현재 사용자를 bookmark에 가지고 있는 Post객체들을 필터링해서 가져옴
+        now_user = request.user                                    # 현재 사용자   
+        book_num=Post.objects.filter(bookmark=now_user.id).count()             
+        book_posts= Post.objects.filter(bookmark=now_user.id)[:3]      # 현재 사용자를 bookmark에 가지고 있는 Post객체들을 필터링해서 가져옴
         for post in book_posts:                                     # 이 Post들의 is_booked는 True. 
             post.is_booked=True                                     # 이건 모델에 있는 정보가 아니라 우리가 상황에 따라 넘겨줘야 하는 정보니까 직접 적어준다
         bookmarkPost = BookPostSerializer(book_posts, many=True)    # BookPostSerializer에 Post객체 넣어서 시리얼라이저 형태에 맞게 만든다
+    
+        #팔로우
+        follows_num=now_user.follow.count()
+        follows=now_user.follow.all()[:6]
+        followseri=UserProfileSerializer(follows,many=True)
+        
         # 내 플레이리스트
-        myPli = Playlist.objects.filter(mypli_user=now_user.id)
+        mypli_num=Playlist.objects.filter(mypli_user=now_user.id).count()
+        myPli = Playlist.objects.filter(mypli_user=now_user.id)[:3]
         myPlaylist=MyPliSerializer(myPli,many=True)
-        return Response({'message': '마이페이지 조회 성공', 'data': {'user': user.data,'book_posts':bookmarkPost.data,'myPlaylist':myPlaylist.data}}, status=status.HTTP_200_OK)
+
+        return Response({'message': '마이페이지 조회 성공', 'data': {'user': user.data,'book_num':book_num,'bookmarkPost':bookmarkPost.data,'follows_num':follows_num,'follows':followseri.data,'mypli_num':mypli_num,'myPlaylist':myPlaylist.data}}, status=status.HTTP_200_OK)
 
 class BookmarkListView(views.APIView):
     permission_classes = [IsAuthenticated] 
