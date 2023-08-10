@@ -17,16 +17,16 @@ class PostSecInAudioSerializer(serializers.ModelSerializer):
         model=PostSec
         fields=['sec_id','num','title','content']
 
-class AudioSecInAudioSerializer(serializers.ModelSerializer):
-    class Meta:
-        model=AudioSec
-        fields=['audiosec_id','num','audiofile']
+# class AudioSecInAudioSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model=AudioSec
+#         fields=['audiosec_id','num','audiofile']
 
 class AudioDetailSerializer(serializers.ModelSerializer):
     audio_post=PostInAudioSerializer(read_only=True)
     class Meta:
         model=Audio
-        fields=['audio_id','audio_post']
+        fields=['audio_id','audio_post','audiofile']
 
 
 class PostInAudioSerializer(serializers.ModelSerializer):

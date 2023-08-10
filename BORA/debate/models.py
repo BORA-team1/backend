@@ -14,3 +14,5 @@ class Debate(models.Model):
     debate_postsec=models.ForeignKey(PostSec, related_name='debate_postsec',on_delete=models.CASCADE)
     debate_line=models.ForeignKey(Line, related_name='debate_line',on_delete=models.CASCADE)
     debaters=models.ManyToManyField(User, related_name='debaters')
+    pros=models.ManyToManyField(User, related_name='pros')
+    cons=models.ManyToManyField(User, related_name='cons')

@@ -14,7 +14,7 @@ class Post(models.Model):
     )
     post_id=models.AutoField(primary_key=True)
     title=models.CharField(max_length=200)
-    date=models.DateTimeField('date published') 
+    date=models.DateField('date published') 
     # post_image=models.ImageField(upload_to = "post_image", null=True, blank=True)
     post_image=models.TextField(max_length=2000)
     diff=models.IntegerField(choices=DIFFS)
