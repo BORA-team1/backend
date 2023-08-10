@@ -41,3 +41,8 @@ class LineMyDebateSerializer(serializers.ModelSerializer):
         line_id = instance.line_id
         debates = Debate.objects.filter(debate_line=line_id,debate_user=request.user.id).all()
         return DebateSerializer(debates, many=True).data
+    
+class NewDebateSerializer(serializers.ModelSerializer):
+    class Meta :
+        model=Debate
+        fields=['debate_id','title', 'num','cond','debate_user','debate_postsec','debate_line']
