@@ -3,8 +3,8 @@ from django.shortcuts import get_object_or_404
 from rest_framework import views
 from rest_framework.status import *
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
-from rest_framework import generics
+from rest_framework.permissions import IsAuthenticated
+from rest_framework import generics, status
 from .models import *
 from .serializers import *
 
@@ -63,4 +63,23 @@ class DoneVoteView(generics.RetrieveAPIView):
     def get_queryset(self):
         user = self.request.user
         return Vote.objects.filter(is_done=True, vote_per_vote__voteper_user=user)
-    
+
+class MyCreatingVoteView(generics.ListAPIView):
+    #내가 만든 투표 조회
+    serializer_class = VoteSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        return Vote.objects.filter(vote_user=user)
+
+class VoteFinishView(views.APIView):
+    #내가 만든 투표 종료
+    def patch(self, request, vote_id):
+        vote = get_object_or_404(Vote, pk=vote_id, vote_user=request.user)
+        vote.is_done = True
+        vote.save()
+
+        serializer = VoteSerializer(vote)
+
+        return Response({"message": "투표 종료 성공", "data": serializer.data}, status=status.HTTP_200_OK)
