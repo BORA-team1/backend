@@ -18,6 +18,9 @@ class Vote (models.Model):
     vote_postsec=models.ForeignKey(PostSec, related_name='vote_postsec',on_delete=models.CASCADE)
     vote_user=models.ForeignKey(User, related_name='vote_user',on_delete=models.SET_NULL,null=True)            # 투표 작성자
 
+    def __str__(self):
+        return "{}: {} - {}의 투표".format(self.vote_id,self.title,self.vote_line.line_post.title)
+
 class VotePer(models.Model):
     AGES = (
         (1, '10대'),
@@ -36,3 +39,6 @@ class VotePer(models.Model):
     select=models.IntegerField(choices=SELECTS,null=True)
     voteper_vote=models.ForeignKey(Vote, related_name='voteper_vote',on_delete=models.CASCADE)
     voteper_user=models.ForeignKey(User, related_name='voteper_user',on_delete=models.CASCADE)
+
+    def __str__(self):
+        return "{}: {}의 투표 - {}".format(self.voteper_id,self.voteper_vote.title,self.select)

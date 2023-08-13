@@ -18,13 +18,12 @@ class UserProfileSerializer(serializers.ModelSerializer):
 class SignUpSerializer(serializers.ModelSerializer):            # 유저 시리얼라이저
     class Meta:
         model=User
-        fields=['id','username','password','nickname','profile','gender','age']
+        fields=['id','username','password','nickname','profile','age']
     def create(self, validated_data):                # 회원정보가 save될 때 원래 create가 쓰일것임 그때 set_password라는 기능을 추가한 느낌
         user = User.objects.create(
             username=validated_data['username'],
             nickname=validated_data['nickname'],
             profile=validated_data['profile'],
-            gender=validated_data['gender'],
             age=validated_data['age']
         )
         user.set_password(validated_data['password'])

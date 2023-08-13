@@ -27,7 +27,7 @@ class User(AbstractUser):
     nickname=models.CharField(max_length=20)
     # profile=models.ImageField(upload_to = "user_profile", null=True, blank=True)
     profile=models.TextField( null=True, blank=True)
-    gender = models.CharField(choices=GENDERS, max_length=1,  default='여')
+    # gender = models.CharField(choices=GENDERS, max_length=1,  default='여')
     is_publisher=models.BooleanField(default=False)
     age=models.IntegerField(choices=AGES,null=True)
     follow= models.ManyToManyField('self', symmetrical=False, related_name='follower')

@@ -10,6 +10,9 @@ class Audio(models.Model):
     audio_post=models.ForeignKey(Post,related_name='audio_post',on_delete=models.CASCADE)
     audiofile=models.TextField( null=True, blank=True)
 
+    def __str__(self):
+        return "{}: {}({})의 오디오".format(self.audio_id,self.audio_post.title,self.audio_post.post_id)
+
 # class AudioSec(models.Model):
 #     audiosec_id=models.AutoField(primary_key=True)
 #     num=models.IntegerField()
@@ -25,3 +28,6 @@ class Playlist(models.Model):
     playlist_audio=models.ManyToManyField(Audio,related_name='playlist_audio')
     hashtag=models.ManyToManyField(Hashtag)
     mypli_user=models.ForeignKey(User, related_name='mypli_user',on_delete=models.CASCADE)
+
+    def __str__(self):
+        return "{}: {}".format(self.playlist_id,self.title)

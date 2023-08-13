@@ -24,11 +24,14 @@ class MyLineView(views.APIView):
         now_user=request.user
         post= get_object_or_404(Post, post_id=post_pk)                                 # 현재 포스트 객체
         post_sec=get_object_or_404(PostSec, sec_id=request.data['line_postsec'])       # 현재 포스트 섹션
-        sentence=request.data['sentence']   
+        sentence=request.data['sentence']
+        content=request.data['content']
         line, created = Line.objects.get_or_create(line_post=post,line_postsec=post_sec,sentence=sentence)            # 현재 포스트의 섹션의 순번에 해당하는 line이 있으면 가져오고 없으면 만든다. 만들어졌다면 created=true
+        line.content=content
+        line.save()
         line.line_user.add(now_user)                                                   # 현재 사용자 추가
         return Response({'message': '밑줄 긋기 성공', 'data': {'line_id': line.line_id, 'sentence': line.sentence}}, status=status.HTTP_200_OK)
-   
+
 class MyLineComView(views.APIView):
     permission_classes = [IsAuthenticated]
     def get(self, request, post_pk):
