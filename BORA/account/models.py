@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
@@ -30,8 +31,17 @@ class User(AbstractUser):
     # gender = models.CharField(choices=GENDERS, max_length=1,  default='여')
     is_publisher=models.BooleanField(default=False)
     age=models.IntegerField(choices=AGES,null=True)
+    birthday=models.DateField(default=datetime.today, null=False)
     follow= models.ManyToManyField('self', symmetrical=False, related_name='follower')
     interest=models.ManyToManyField(Hashtag)
     
+    def birthday_toage(self):
+        today = datetime.now().date()
+        self.age = today.year - self.birthday.year - ((today.month, today.day)<(self.birthday.month, self.birthday.day))
+
+    def save(self, *args, **kwargs):
+        self.birthday_toage()
+        super(User, self).save(*args, **kwargs)
+        
     def __str__(self):
         return "{}: {}".format(self.id,self.nickname)
