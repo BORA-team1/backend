@@ -46,6 +46,10 @@ class PlaylistSerializer(serializers.ModelSerializer):
     class Meta:
         model=Playlist
         fields=['playlist_id','title','playlist_audio']
+    def get_playlist_audio(self, obj):
+        sorted_audios = obj.playlist_audio.order_by('audio_id')
+        serializer = AudioInPlaylistSerializer(sorted_audios, many=True, read_only=True)
+        return serializer.data
 
 class NewPlaylistSerializer(serializers.ModelSerializer):
     class Meta:

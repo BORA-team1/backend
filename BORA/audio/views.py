@@ -3,8 +3,9 @@ from rest_framework import views
 from rest_framework import status
 from rest_framework.response import Response
 from .serializers import *
-from audio.models import Playlist
+from audio.models import Playlist,Audio
 from rest_framework.permissions import IsAuthenticated
+from django.db.models import Q
 
 # Create your views here.
 
@@ -70,3 +71,19 @@ class NewPlaylistView(views.APIView):
 
             return Response({'message': '나만의 플리 성공', 'data': serializer.data}, status=status.HTTP_200_OK)
         return Response(serializer.errors)
+
+
+class NextAudioView(views.APIView):
+     def get(self, request, playlist_pk,audio_pk):
+        try:
+            playlist = Playlist.objects.get(pk=playlist_pk)
+        except Playlist.DoesNotExist:
+            return Response({'message': '플레이리스트가 존재하지 않습니다.'}, status=status.HTTP_404_NOT_FOUND)
+        audio_set = playlist.playlist_audio.all()
+        next_audio = audio_set.filter(Q(audio_id__gt=audio_pk)).order_by('audio_id').first()
+        
+        if next_audio:
+            return Response({'audio': next_audio.audio_id}, status=status.HTTP_200_OK)
+        else:
+            return Response({'message': '다음 오디오가 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
+    
