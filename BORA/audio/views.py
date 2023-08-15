@@ -17,12 +17,17 @@ class AudioDetailView(views.APIView):
         postsecseri=PostSecInAudioSerializer(postsecs, many=True).data
         # audiosecs=AudioSec.objects.filter(audiosec_audio=audio)
         # audiosecseri=AudioSecInAudioSerializer(audiosecs, many=True).data
+        if request.user in audio.audio_post.bookmark.all():
+            is_booked=True
+        else:
+            is_booked=False
         data={
             "audio_id":serializer.data['audio_id'],
             "audio_post": serializer.data['audio_post'],
             "audiofile":serializer.data['audiofile'],
-            "PostSec":postsecseri
+            "PostSec":postsecseri,
             # "AudioSec":audiosecseri
+            "is_booked": is_booked
         }
         return Response({'message': '오디오북 상세 조회 성공', 'data': data}, status=status.HTTP_200_OK)
     
