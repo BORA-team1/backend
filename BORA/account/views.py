@@ -36,3 +36,16 @@ class MyProfileView(views.APIView):
     def get(self, request, format=None):
         serializer = UserProfileSerializer(request.user)
         return Response({'message': '프로필 가져오기 성공', 'data': serializer.data}, status=status.HTTP_200_OK)
+    
+
+#아이디 중복 확인
+class DuplicateIDView(views.APIView):
+    def post(self, request):
+        username = request.data.get('username')
+
+        if User.objects.filter(username=username).exists():
+            response_data = {'duplicate':True}
+        else:
+            response_data = {'duplicate':False}
+        
+        return Response(response_data, status=status.HTTP_200_OK)
