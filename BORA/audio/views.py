@@ -41,7 +41,8 @@ class NewPlaylistView(views.APIView):
         Request.pop('playlist_audio')    
 
         # 오디오들: playlist_audio데이터 뽑아냄
-        playlist_audios=request.data['playlist_audio']
+        playlist_audioss = request.data['playlist_audio']
+        playlist_audios = sorted(playlist_audioss, key=lambda x: x['audio_id'])
 
         # 첫번째 오디오: playlist_audio데이터의 첫번째 요소를 first_audio로 지정
         first_audio_id = playlist_audios[0]['audio_id']
@@ -86,4 +87,5 @@ class NextAudioView(views.APIView):
             return Response({'audio': next_audio.audio_id}, status=status.HTTP_200_OK)
         else:
             return Response({'message': '다음 오디오가 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
-    
+        
+
