@@ -17,17 +17,35 @@ class VotePerSerializer(serializers.ModelSerializer):
 
 
 # --------------진행중 투표-------------------
+# class IngVoteSerializer(serializers.ModelSerializer):
+#     vote_user=UserProfileSerializer()
+#     is_my=serializers.SerializerMethodField()
+#     class Meta:
+#         model = Vote
+#         fields=['vote_id','title','vote_user','item1', 'item2', 'item3', 'is_my']
+#     def get_is_my(self, obj):
+#         request = self.context.get('request')
+#         if request and request.user.is_authenticated:
+#             return obj.vote_user == request.user
+#         return False
 class IngVoteSerializer(serializers.ModelSerializer):
     vote_user=UserProfileSerializer()
     is_my=serializers.SerializerMethodField()
+    my_select=serializers.SerializerMethodField()
     class Meta:
         model = Vote
-        fields=['vote_id','title','vote_user','item1', 'item2', 'item3', 'is_my']
+        fields=['vote_id','title','vote_user','item1', 'item2', 'item3', 'is_my','my_select']
     def get_is_my(self, obj):
         request = self.context.get('request')
         if request and request.user.is_authenticated:
             return obj.vote_user == request.user
         return False
+    def get_my_select(self, obj):
+        request = self.context.get('request')
+        if VotePer.objects.filter(voteper_user=request.user.id,voteper_vote=obj.vote_id).exists():
+       
+            return VotePer.objects.filter(voteper_user=request.user,voteper_vote=obj.vote_id).first().select
+        else: return 0
 
 class IngVoteLineSerializer(serializers.ModelSerializer):
     IngVote=IngVoteSerializer(source='vote_line',many=True)
