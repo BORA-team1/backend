@@ -40,6 +40,8 @@ class PlaylistView(views.APIView):
      
 class NewPlaylistView(views.APIView):
     permission_classes = [IsAuthenticated]
+    def get(self,request):
+        return Response(status=status.HTTP_200_OK)
     def post(self, request):
         # request에서 playlist_audio 삭제한 Request생성: 삭제 안하고 넘기면 Dict이 넘어왔다고 오류뜸
         Request=request.data.copy()
