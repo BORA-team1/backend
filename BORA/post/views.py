@@ -167,6 +167,7 @@ class PostDetailView(views.APIView):
     def get(self, request,post_pk):
         post=get_object_or_404(Post,post_id=post_pk)
         author=post.post_user.nickname
+        author_id=post.post_user.id
         hashtag=post.hashtag.all()
         hash=InterestSerializer(hashtag,many=True)
         # postserializer=PostDetailSerializer(post)
@@ -185,16 +186,17 @@ class PostDetailView(views.APIView):
             "post_id": post.post_id,
             "title": post.title,
             "post_image": post.post_image,
-            "diff": post.diff ,     
-            "author": author,  
+            "diff": post.diff ,
+            "author": author,
+            "author_id":author_id,
             "date": post.date,
             "hashtag": hash.data,
-            "Audio": audio.audio_id,                   
+            "Audio": audio.audio_id,
             "PostSec": postsecseri.data,
             "HanNum": han_count,
             "Han": besthanseri.data
         }
-    
+
         return Response({'message':'게시물 상세 조회 성공',"data":data}, status=status.HTTP_200_OK)
 
 class PostAllContentView(views.APIView):
