@@ -144,7 +144,9 @@ class PostSecSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):                  
         request = self.context.get('request')   
         representation = super().to_representation(instance)
-        lines = instance.line_postsec.all().order_by('sentence')
+        # lines = instance.line_postsec.all().order_by('sentence')
+        
+        lines=Line.objects.filter(line_postsec=instance.sec_id).all().order_by('sentence')
 
         serializer = LineSerializer(lines, many=True, context={'request': request},source='line_postsec') 
         representation['Lines'] = serializer.data
