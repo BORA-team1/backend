@@ -16,16 +16,11 @@ class SignUpView(views.APIView):
 
         serializer=SignUpSerializer(data=Request)
         if serializer.is_valid():
-
-
             user=serializer.save()                          # 회원가입
             # 해시태그(관심사) 추가
-
             hashtags_list = hashtags.split()
             hashtags_list_end = [tag[1:] for tag in hashtags_list if tag.startswith('#')]
-            print(hashtags_list_end)
             for tag in hashtags_list_end:
-                print(tag)
                 hashtag , _ = Hashtag.objects.get_or_create(hashtag=tag)
                 user.interest.add(hashtag)
             return Response({'message':'회원가입 성공','data':serializer.data}, status=status.HTTP_201_CREATED)
