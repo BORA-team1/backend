@@ -164,6 +164,14 @@ class LineComLikeView(views.APIView):
         linecom.like.remove(request.user)
         serializer=LineComLikeSerializer(linecom,context={'request': request})
         return Response({"message": "밑줄 댓글 좋아요 취소 성공","data":serializer.data})
+    def patch(self,request, linecom_pk):
+        linecom=get_object_or_404(LineCom,linecom_id=linecom_pk)
+        if request.user in linecom.like.all():
+            linecom.like.remove(request.user)
+        else:
+            linecom.like.add(request.user)
+        serializer=LineComLikeSerializer(linecom,context={'request': request})
+        return Response({"message": "밑줄 댓글 좋아요 여부 변경 성공","data":serializer.data})
 
 class NewLineComComView(views.APIView):
     def post(self, request, linecom_pk):

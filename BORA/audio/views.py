@@ -15,6 +15,7 @@ class AudioDetailView(views.APIView):
         serializer = AudioDetailSerializer(audio)
         postsecs=PostSec.objects.filter(sec_post=audio.audio_post).all()
         postsecseri=PostSecInAudioSerializer(postsecs, many=True).data
+        author_id=audio.audio_post.post_user.id
         # audiosecs=AudioSec.objects.filter(audiosec_audio=audio)
         # audiosecseri=AudioSecInAudioSerializer(audiosecs, many=True).data
         if request.user in audio.audio_post.bookmark.all():
@@ -23,6 +24,7 @@ class AudioDetailView(views.APIView):
             is_booked=False
         data={
             "audio_id":serializer.data['audio_id'],
+            "author_id":author_id,
             "audio_post": serializer.data['audio_post'],
             "audiofile":serializer.data['audiofile'],
             "PostSec":postsecseri,
