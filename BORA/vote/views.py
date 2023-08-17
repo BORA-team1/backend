@@ -8,6 +8,7 @@ from rest_framework import generics, status
 from .models import *
 from .serializers import *
 from line.models import Line
+from datetime import date, timedelta
 
 # Create your views here.
 
@@ -96,6 +97,7 @@ class VoteFinishView(views.APIView):
     def patch(self, request, vote_pk):
         vote = get_object_or_404(Vote, vote_id=vote_pk, vote_user=request.user)
         vote.is_done = True
+        vote.done_date=date.today()
         vote.save()
 
         serializer = VoteSerializer(vote)
