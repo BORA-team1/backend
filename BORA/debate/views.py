@@ -11,19 +11,19 @@ from django.db.models import Q
 # Create your views here.
 class IngDebateView(views.APIView):
     def get(self, request, post_pk):
-        debates=Debate.objects.filter(Q(debate_line__line_post=post_pk, cond__lt=3))
+        debates=Debate.objects.filter(Q(debate_line__line_post=post_pk, cond=1))
         debates.order_by('debate_postsec__num','debate_line__sentence')  
         lines=list(set([debate.debate_line for debate in debates]))
-        lineseri=LineIngDebateSerializer(lines,many=True)
+        lineseri=LineIngDebateSerializer(lines,many=True,context={'request': request})
         return Response({"message": "진행중 투표 조회 성공", "data": {"Lines":lineseri.data}})
 
 
 class DoneDebateView(views.APIView):
     def get(self, request, post_pk):
-        debates=Debate.objects.filter(Q(debate_line__line_post=post_pk, cond=3))
+        debates=Debate.objects.filter(Q(debate_line__line_post=post_pk, cond=2))
         debates.order_by('debate_postsec__num','debate_line__sentence')  
         lines=list(set([debate.debate_line for debate in debates]))     
-        lineseri=LineDoneDebateSerializer(lines,many=True)
+        lineseri=LineDoneDebateSerializer(lines,many=True,context={'request': request})
         return Response({"message": "완료된 투표 조회 성공", "data": {"Lines":lineseri.data}})
 
 class MyDebateView(views.APIView):
@@ -43,7 +43,7 @@ class NewDebateView(views.APIView):
         postsec=get_object_or_404(Line, line_id=request.data['debate_line'] ).line_postsec
         new_debate=NewDebateSerializer(data={
             'title': request.data['title'],
-            'num':request.data['num'],
+            'link': request.data['link'],
             'cond': first_cond,
             'debate_user':user.id,
             'debate_postsec':postsec.sec_id,
@@ -76,7 +76,7 @@ class StartDebateView(views.APIView):
 class FinishDebateView(views.APIView):
     def patch(self, request, debate_pk):
         debate=get_object_or_404(Debate, debate_id=debate_pk)
-        debate.cond=3
+        debate.cond=2
         debate.save()
 
         seri=NewDebateSerializer(debate)

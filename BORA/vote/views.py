@@ -43,8 +43,8 @@ class VoteView(views.APIView):
         if created: 
             vote_per.age=user.age
             
-        if request.data['select'] not in [1,2,3]:
-            return Response({'message': '유효하지 않은 항목입니다.'}, status=status.HTTP_400_BAD_REQUEST)
+        # if request.data['select'] not in [1,2,3]:
+        #     return Response({'message': '유효하지 않은 항목입니다.'}, status=status.HTTP_400_BAD_REQUEST)
         
         vote_per.select=request.data['select']
         vote_per.save()

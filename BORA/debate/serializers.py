@@ -6,20 +6,26 @@ from account.serializers import UserProfileSerializer
 
 class DebateSerializer(serializers.ModelSerializer):
     debate_user=UserProfileSerializer()
-    debaters=UserProfileSerializer(many=True)
+    is_my=serializers.SerializerMethodField()
     class Meta :
         model=Debate
-        fields=['debate_id','title', 'num', 'cond', 'debate_user', 'debaters']
-
+        fields=['debate_id','title', 'cond','link', 'debate_user', 'is_my']
+    def get_is_my(self, obj):
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            return obj.debate_user == request.user
+        return False
+    
 class LineIngDebateSerializer(serializers.ModelSerializer):
     Debate=serializers.SerializerMethodField()
     class Meta :
         model=Line
         fields=['line_id','content', 'Debate']
     def get_Debate(self, instance):
+        request = self.context.get('request')
         line_id = instance.line_id
-        debates = Debate.objects.filter(debate_line=line_id,cond__lt=3).all()
-        return DebateSerializer(debates, many=True).data
+        debates = Debate.objects.filter(debate_line=line_id,cond=1).all()
+        return DebateSerializer(debates, many=True, context={'request': request}).data
     
 class LineDoneDebateSerializer(serializers.ModelSerializer):
     Debate=serializers.SerializerMethodField()
@@ -27,9 +33,10 @@ class LineDoneDebateSerializer(serializers.ModelSerializer):
         model=Line
         fields=['line_id','content', 'Debate']
     def get_Debate(self, instance):
+        request = self.context.get('request')
         line_id = instance.line_id
-        debates = Debate.objects.filter(debate_line=line_id,cond=3).all()
-        return DebateSerializer(debates, many=True).data
+        debates = Debate.objects.filter(debate_line=line_id,cond=2).all()
+        return DebateSerializer(debates, many=True,context={'request': request}).data
     
 class LineMyDebateSerializer(serializers.ModelSerializer):
     Debate=serializers.SerializerMethodField()
@@ -40,9 +47,9 @@ class LineMyDebateSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         line_id = instance.line_id
         debates = Debate.objects.filter(debate_line=line_id,debate_user=request.user.id).all()
-        return DebateSerializer(debates, many=True).data
+        return DebateSerializer(debates, many=True,context={'request': request}).data
     
 class NewDebateSerializer(serializers.ModelSerializer):
     class Meta :
         model=Debate
-        fields=['debate_id','title', 'num','cond','debate_user','debate_postsec','debate_line']
+        fields=['debate_id','title','cond','debate_user','debate_postsec','debate_line','link']

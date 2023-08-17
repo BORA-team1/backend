@@ -9,7 +9,7 @@ from debate.models import Debate
 from han.models import Han
 from django.db.models import Count
 from rest_framework import serializers
-
+from debate.serializers import DebateSerializer
 
 
 class PostSearchSerializer(serializers.ModelSerializer):
@@ -73,11 +73,11 @@ class DoneVotePostSerializer(serializers.ModelSerializer):
                 result[f"result{select}_{age}"] = VotePer.objects.filter(voteper_vote=instance, age=age, select=select).count()
         return result
     
-class DebatePostSerializer(serializers.ModelSerializer):
-    debate_user=UserProfileSerializer(many=True,source='debaters')
-    class Meta:
-        model = Debate
-        fields = ['debate_id', 'title', 'cond','debate_user']
+# class DebatePostSerializer(serializers.ModelSerializer):
+#     debate_user=UserProfileSerializer(many=True,source='debaters')
+#     class Meta:
+#         model = Debate
+#         fields = ['debate_id', 'title', 'cond','debate_user']
 
 class LineSerializer(serializers.ModelSerializer):
     LineCom = LineComPostSerializer(many=True,source='linecom_line')
@@ -86,7 +86,8 @@ class LineSerializer(serializers.ModelSerializer):
     IngVote=serializers.SerializerMethodField()
     DoneVote=serializers.SerializerMethodField()
     is_my=serializers.SerializerMethodField()
-    Debate=DebatePostSerializer(many=True, source='debate_line')
+    # Debate=DebatePostSerializer(many=True, source='debate_line')
+    Debate=serializers.SerializerMethodField()
     
     class Meta:
         model = Line
@@ -126,6 +127,13 @@ class LineSerializer(serializers.ModelSerializer):
         ]
         
         return EmotionCountSerializer(result, many=True, context={'request': request, 'line': line_id}).data
+    
+    def get_Debate(self, instance):
+        request = self.context.get('request')
+        line_id = instance.line_id
+        debates = Debate.objects.filter(debate_line=line_id).all()
+        return DebateSerializer(debates, many=True,source='debate_line',context={'request': request}).data
+    
 
 
 class PostSecSerializer(serializers.ModelSerializer):
@@ -252,12 +260,12 @@ class EmotionCountSerializer(serializers.Serializer):
         return False
     
     
-class DebateContentSerializer(serializers.ModelSerializer):
-    debate_user=UserProfileSerializer()
-    debaters=UserProfileSerializer(many=True)
-    class Meta:
-        model = Debate
-        fields = ['debate_id', 'title','num', 'cond','debate_user','debaters']
+# class DebateContentSerializer(serializers.ModelSerializer):
+#     debate_user=UserProfileSerializer()
+#     debaters=UserProfileSerializer(many=True)
+#     class Meta:
+#         model = Debate
+#         fields = ['debate_id', 'title','num', 'cond','debate_user','debaters']
 
 class LineContentSerializer(serializers.ModelSerializer):
     LineCom = LineComContentSerializer(many=True,source='linecom_line')
@@ -265,8 +273,8 @@ class LineContentSerializer(serializers.ModelSerializer):
     Emotion = serializers.SerializerMethodField()
     IngVote=serializers.SerializerMethodField()
     DoneVote=serializers.SerializerMethodField()
-    Debate=DebateContentSerializer(many=True, source='debate_line')
-    
+    # Debate=DebateContentSerializer(many=True, source='debate_line')
+    Debate=serializers.SerializerMethodField()
     class Meta:
         model = Line
         fields = ['line_id', 'sentence', 'content','LineCom', 'Question', 'Emotion', 'IngVote', 'DoneVote','Debate']
@@ -312,6 +320,13 @@ class LineContentSerializer(serializers.ModelSerializer):
 
 
         return representation
+    
+    def get_Debate(self, instance):
+        request = self.context.get('request')
+        line_id = instance.line_id
+        debates = Debate.objects.filter(debate_line=line_id).all()
+        return DebateSerializer(debates, many=True,source='debate_line',context={'request': request}).data
+    
 
 
 class PostSecContentSerializer(serializers.ModelSerializer):

@@ -66,6 +66,8 @@ class MypliListView(views.APIView):
     
 class FollowingView(views.APIView):
     permission_classes = [IsAuthenticated] 
+    def get(self,request):
+        return Response(status=status.HTTP_200_OK)
     def post(self, request, user_pk):
         user = request.user
         follow = get_object_or_404(User, id=user_pk)
