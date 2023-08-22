@@ -17,6 +17,13 @@ Active senior는 소통하고 싶어도 소셜미디어 사용에 익숙하지 �
 <img src="https://github.com/BORA-team1/backend/assets/100216331/8d7f5a8d-f568-4ff4-bcd9-f66aa0010424" width="700">
 <img src="https://github.com/BORA-team1/backend/assets/100216331/5d51c15b-45ad-4cd0-a4c2-e458c7b47af6" width="700">
 
+# 백엔드 개발자 소개
+|허채린|박나담|
+|:---------:|:----------:|
+|&ensp;&ensp;&ensp; <img src="https://github.com/BORA-team1/backend/assets/100216331/aeca2ecb-c6a8-42e5-8503-a376451c13b3" width="100">&ensp;&ensp;&ensp;|&ensp;&ensp;&ensp;<img src="https://github.com/BORA-team1/backend/assets/100216331/84057bde-d456-4c5f-b7dd-6216ad0af665" width="100">&ensp;&ensp;&ensp;|
+|DB설계<br>API구현<br>API 배포|DB설계<br>API구현|
+
+
 # API 명세서
 <img width="500" alt="스크린샷 2023-08-22 오후 2 08 22" src="https://github.com/BORA-team1/backend/assets/100216331/ef203db1-63af-48f4-9c29-e95a4b449d2f"> <br>
 <img width="500" alt="스크린샷 2023-08-22 오후 2 08 48" src="https://github.com/BORA-team1/backend/assets/100216331/e563b59f-bab5-4ee2-a261-b5836e64a0b1"> <br>
