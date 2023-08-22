@@ -18,7 +18,7 @@ Active senior는 소통하고 싶어도 소셜미디어 사용에 익숙하지 �
 <img src="https://github.com/BORA-team1/backend/assets/100216331/5d51c15b-45ad-4cd0-a4c2-e458c7b47af6" width="700">
 
 # 백엔드 개발자 소개
-|허채린|박나담|
+|[허채린](https://github.com/julia-heo)|[박나담](https://github.com/parknadam)|
 |:---------:|:----------:|
 |&ensp;&ensp;&ensp; <img src="https://github.com/BORA-team1/backend/assets/100216331/aeca2ecb-c6a8-42e5-8503-a376451c13b3" width="100">&ensp;&ensp;&ensp;|&ensp;&ensp;&ensp;<img src="https://github.com/BORA-team1/backend/assets/100216331/84057bde-d456-4c5f-b7dd-6216ad0af665" width="100">&ensp;&ensp;&ensp;|
 |DB설계<br>API구현<br>API 배포|DB설계<br>API구현|
